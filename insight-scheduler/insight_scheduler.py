@@ -16,8 +16,14 @@ https://blueprints.launchpad.net/nova/+spec/vm-ensembles
 
 """
 
-import requests
-import simplejson as json
+import subprocess
 
 class InsightScheduler():
     """Scheduler which awares of VC members."""
+
+    def schedule_cluster():
+    	"""Mapping of VC members and PMs"""
+
+    	# To-do:
+    	# inputs: VC graph, PMs graph
+    	
