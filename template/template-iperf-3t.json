@@ -1,0 +1,25 @@
+{
+  "name": "iperf 3-tier application",
+  "description": "3-tier iperf cluster, with 2 heavy communication nodes",
+  "members": 3,
+  "topology": [
+    {
+      "id": 1,
+      "image": "iperf-3t-1",
+      "flavor": "c1.micro",
+      "link": [2, 3]
+    },
+    {
+      "id": 2,
+      "image": "iperf-3t-2",
+      "flavor": "c1.micro",
+      "link": [1, 3]
+    },
+    {
+      "id": 3,
+      "image": "iperf-3t-3",
+      "flavor": "c1.micro",
+      "link": [1, 2]
+    }
+  ]
+}
