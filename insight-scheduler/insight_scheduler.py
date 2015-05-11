@@ -18,8 +18,9 @@ https://blueprints.launchpad.net/nova/+spec/vm-ensembles
 import sys
 import getopt
 import subprocess
-#import simplejson as json
-#from graph_tool.all import *
+import simplejson as json
+from graph_tool.all import *
+#from pprint import pprint
 
 class InsightScheduler(object):
     """Scheduler which awares of VC members."""
@@ -55,3 +56,10 @@ if __name__ == '__main__':
             cluster = arg
 
     #print cluster
+    
+    with open(cluster) as data_file:
+        cluster_info = json.load(data_file)
+
+    #pprint(cluster_info)
+
+    
