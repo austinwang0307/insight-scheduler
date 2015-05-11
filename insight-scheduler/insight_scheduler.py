@@ -13,11 +13,13 @@ As soon as Nova supports VM-Ensembles scheduling
 We will integrate InsightScheduler to Nova source code.
 
 https://blueprints.launchpad.net/nova/+spec/vm-ensembles
-
 """
 
+import sys
+import getopt
 import subprocess
-from graph_tool.all import *
+#import simplejson as json
+#from graph_tool.all import *
 
 class InsightScheduler(object):
     """Scheduler which awares of VC members."""
@@ -31,3 +33,25 @@ class InsightScheduler(object):
     def make_graph(self, vertex, weighted_edge):
     	"""Construct graph of the given vertice and weighted edeges."""
     	
+if __name__ == '__main__':
+    """main function, begins right here."""
+
+    cluster = ''
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "hc:", ["help", "cluster="])
+    except getopt.GetoptError as e:
+        print "insight_scheduler.py -cluster <cluster.json>"
+        sys.exit(2)
+
+    if(len(opts) <= 0):
+        print "insight_scheduler.py -cluster <cluster.json>"
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            print "insight_scheduler.py -cluster <cluster.json>"
+            sys.exit()
+        elif opt in ("-c", "--cluster"):
+            cluster = arg
+
+    #print cluster
