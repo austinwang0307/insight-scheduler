@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-# Cpoyright (c) 2015 austinwang0307@gmail.com
+# Cpoyright (c) 2015 Hao-Ping Wang (austinwang0307@gmail.com)
 # All Rights Reserved.
 
 """
@@ -47,20 +47,27 @@ class InsightScheduler(object):
     def __build_pmg(self):
         """Build physical machines graph using the self.hypervisors property"""
 
-    def schedule_cluster(self, vcg, pmg):
-    	"""Mapping of VC members and PMs"""
+        pm_graph = Graph(directed=False)
+        pm_node_list = pm_graph.add_vertex(self.hypervisors)
+        for i in range(0, self.hypervisors):
+            pm_graph.add_edge(pm_graph.vertex(i), pm_graph.vertex(0 if (i+1)==self.hypervisors else (i+1))
 
-    	# To-do:
-    	# inputs: VC graph, PMs graph
+        return pm_graph
     	
     def build_vcg(self, vertices, edges):
     	"""Build virtual cluster graph of the given vertices and edeges."""
 
         # vertices: list of vertices' ids, eg. [1, 2, 3]
         # edges: list of tuples of vertices, eg. [(1,2), (1,3)]
+    
+    def schedule_cluster(self, vcg, pmg):
+        """Mapping of VC members and PMs"""
+
+        # To-do:
+        # inputs: VC graph, PMs graph
     	
 if __name__ == '__main__':
-    """main function, begins right here."""
+    """main function, program begins right here."""
 
     cluster = ""
 
