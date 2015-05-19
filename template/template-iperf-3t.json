@@ -7,22 +7,25 @@
       "id": 0,
       "image": "iperf-3t-1",
       "flavor": "c1.micro",
-      "link": [1, 2],
-      "critical_link": [1]
+      "link": [1, 2]
     },
     {
       "id": 1,
       "image": "iperf-3t-2",
       "flavor": "c1.micro",
-      "link": [0, 2],
-      "critical_link": [0]
+      "link": [0, 2]
     },
     {
       "id": 2,
       "image": "iperf-3t-3",
       "flavor": "c1.micro",
-      "link": [0, 1],
-      "critical_link": []
+      "link": [0, 1]
+    }
+  ],
+  "critical_link":[
+    {
+      "id": 0,
+      "node_pair": [0, 1]
     }
   ]
 }
