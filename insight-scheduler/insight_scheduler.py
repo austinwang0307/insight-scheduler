@@ -99,7 +99,7 @@ class InsightScheduler(object):
             if not vprop_beScheduled[vc_graph.vertex(v)]:
                 vc_graph.remove_vertex(vc_graph.vertex(v))
 
-        return vc_graph
+        return vc_graph # associate property map to graph ???
 
     def schedule_cluster(self, vcg, pmg):
         """Mapping of VC members and PMs"""
