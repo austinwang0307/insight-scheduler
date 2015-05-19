@@ -27,7 +27,7 @@ from novaclient.v1_1 import client
 class InsightScheduler(object):
     """Scheduler which awares of VC members."""
 
-    def __init__(self):
+    def __init__(self, cluster_info):
         """Initial the scheduler"""
 
         # 1. Nova authentication.
@@ -36,6 +36,7 @@ class InsightScheduler(object):
         creds = __nova_creds()
         nova = client.Client(**creds)
         self.hypervisors = len(nova.hypervisors.list())
+        self.cluster_info = cluster_info
 
     def __nova_creds(self):
         """Handles nova credentials"""
@@ -61,7 +62,7 @@ class InsightScheduler(object):
 
         return pm_graph
     	
-    def build_vcg(self, cluster_info):
+    def __build_vcg(self):
     	"""Build virtual cluster graph of the given vertices and edeges."""
 
         # vertices: list of vertices' ids, eg. [1, 2, 3]
@@ -71,9 +72,9 @@ class InsightScheduler(object):
 
         #1.1 (tested)
         vc_graph = Graph(directed=False)
-        vc_node_list = vc_graph.add_vertex(cluster_info["members"])
-        for node_index in range(0, cluster_info["members"]):
-            for link_node in cluster_info["topology"][node_index]["link"]:
+        vc_node_list = vc_graph.add_vertex(self.cluster_info["members"])
+        for node_index in range(0, self.cluster_info["members"]):
+            for link_node in self.cluster_info["topology"][node_index]["link"]:
                 vc_graph.add_edge(vc_graph.vertex(node_index), vc_graph.vertex(link_node))
         remove_parallel_edges(vc_graph)
         
@@ -85,11 +86,11 @@ class InsightScheduler(object):
             vprop_beScheduled[vc_graph.vertex(vertex_id)] = True
         
         #2.1 (tested)
-        for vertex_id in range(0, cluster_info["members"]):
+        for vertex_id in range(0, self.cluster_info["members"]):
             if(vprop_beScheduled[vc_graph.vertex(vertex_id)]):
-                for node in cluster_info["topology"][vertex_id]["nodes_with_critical_link"]:
+                for node in self.cluster_info["topology"][vertex_id]["nodes_with_critical_link"]:
                     vprop_beScheduled[vc_graph.vertex(node)] = False
-                critical_link_nodes = cluster_info["topology"][vertex_id]["nodes_with_critical_link"]
+                critical_link_nodes = self.cluster_info["topology"][vertex_id]["nodes_with_critical_link"]
                 critical_link_nodes.append(vertex_id)
                 vprop_nodes[vc_graph.vertex(vertex_id)] = critical_link_nodes
 
