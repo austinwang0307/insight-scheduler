@@ -30,12 +30,17 @@ class InsightScheduler(object):
     def __init__(self):
         """Initial the scheduler"""
 
+        # 1. Nova authentication.
+        # 2. query numbers of compute nodes.
+
         creds = __nova_creds()
         nova = client.Client(**creds)
         self.hypervisors = len(nova.hypervisors.list())
 
     def __nova_creds(self):
         """Handles nova credentials"""
+
+        # 1. get shell environment variables.
 
         cred = {}
         cred['username'] = os.environ['OS_USERNAME']
@@ -47,6 +52,8 @@ class InsightScheduler(object):
     def __build_pmg(self):
         """Build physical machines graph using the self.hypervisors property"""
 
+        # 1. construct physical machines graph, every pairs of PMs are connected.
+
         pm_graph = Graph(directed=False)
         pm_node_list = pm_graph.add_vertex(self.hypervisors)
         for i in range(0, self.hypervisors):
@@ -54,12 +61,45 @@ class InsightScheduler(object):
 
         return pm_graph
     	
-    def build_vcg(self, vertices, edges):
+    def build_vcg(self, cluster_info):
     	"""Build virtual cluster graph of the given vertices and edeges."""
 
         # vertices: list of vertices' ids, eg. [1, 2, 3]
         # edges: list of tuples of vertices, eg. [(1,2), (1,3)]
-    
+        # 1. make graph, according to template.json
+        # 2. combined vertices to be placed together 
+
+        #1.1 (tested)
+        vc_graph = Graph(directed=False)
+        vc_node_list = vc_graph.add_vertex(cluster_info["members"])
+        for node_index in range(0, cluster_info["members"]):
+            for link_node in cluster_info["topology"][node_index]["link"]:
+                vc_graph.add_edge(vc_graph.vertex(node_index), vc_graph.vertex(link_node))
+        remove_parallel_edges(vc_graph)
+        
+        #1.2 (tested)
+        vprop_nodes = vc_graph.new_vertex_property("vector<int>")
+        vprop_beScheduled = vc_graph.new_vertex_property("bool")
+        for vertex_id in vc_node_list:
+            #vprop_nodes[vc_graph.vertex(vertex_id)] = [vertex_id] # may not be needed
+            vprop_beScheduled[vc_graph.vertex(vertex_id)] = True
+        
+        #2.1 (tested)
+        for vertex_id in range(0, cluster_info["members"]):
+            if(vprop_beScheduled[vc_graph.vertex(vertex_id)]):
+                for node in cluster_info["topology"][vertex_id]["nodes_with_critical_link"]:
+                    vprop_beScheduled[vc_graph.vertex(node)] = False
+                critical_link_nodes = cluster_info["topology"][vertex_id]["nodes_with_critical_link"]
+                critical_link_nodes.append(vertex_id)
+                vprop_nodes[vc_graph.vertex(vertex_id)] = critical_link_nodes
+
+        #2.2 (tested)
+        for v in vc_graph.vertices():
+            if not vprop_beScheduled[vc_graph.vertex(v)]:
+                vc_graph.remove_vertex(vc_graph.vertex(v))
+
+        return vc_graph
+
     def schedule_cluster(self, vcg, pmg):
         """Mapping of VC members and PMs"""
 
@@ -94,4 +134,5 @@ if __name__ == '__main__':
 
     #pprint(cluster_info)
 
+    
     
