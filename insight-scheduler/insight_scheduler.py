@@ -101,11 +101,13 @@ class InsightScheduler(object):
 
         return vc_graph # associate property map to graph ???
 
-    def schedule_cluster(self, vcg, pmg):
+    def schedule_cluster(self):
         """Mapping of VC members and PMs"""
 
-        # To-do:
-        # inputs: VC graph, PMs graph
+        # 1. construct PMG and VCG
+        # 2. generate subgraph isomorphism
+        # 3. nova boot cluster
+        # 4. handle exceptions
     	
 if __name__ == '__main__':
     """main function, program begins right here."""
