@@ -95,9 +95,12 @@ class InsightScheduler(object):
                 vprop_nodes[vc_graph.vertex(vertex_id)] = critical_link_nodes
 
         #2.2 (tested)
-        for v in vc_node_list:
-            if not vprop_beScheduled[vc_graph.vertex(v)]:
-                vc_graph.remove_vertex(vc_graph.vertex(v))
+        removed_nodes = []
+        for v in vc_graph.vertices():
+            if not vprop_beScheduled[vc_graph.vertex(int(v))]:
+                removed_nodes.append(int(v))
+        for item in removed_nodes:
+            vc_graph.remove_vertex(vc_graph.vertex(int(item)))
 
         return vc_graph # associate property map to graph ???
 
