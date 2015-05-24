@@ -81,6 +81,8 @@ class InsightScheduler(object):
         #1.2 (tested)
         vprop_nodes = vc_graph.new_vertex_property("vector<int>")
         vprop_beScheduled = vc_graph.new_vertex_property("bool")
+        vc_graph.vertex_properties["nodes"] = vprop_nodes
+        vc_graph.vertex_properties["beScheduled"] = vprop_beScheduled
         for vertex_id in vc_node_list:
             #vprop_nodes[vc_graph.vertex(vertex_id)] = [vertex_id] # may not be needed
             vprop_beScheduled[vc_graph.vertex(vertex_id)] = True
@@ -111,6 +113,10 @@ class InsightScheduler(object):
         # 2. generate subgraph isomorphism
         # 3. nova boot cluster
         # 4. handle exceptions
+
+        pmg = __build_pmg()
+        vcg = __build_vcg()
+        
     	
 if __name__ == '__main__':
     """main function, program begins right here."""
