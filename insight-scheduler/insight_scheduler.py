@@ -55,11 +55,13 @@ class InsightScheduler(object):
 
         # 1. construct physical machines graph, every pairs of PMs are connected.
 
-        pm_graph = Graph(directed=False)
-        pm_node_list = pm_graph.add_vertex(self.hypervisors)
-        for i in range(0, self.hypervisors):
-            pm_graph.add_edge(pm_graph.vertex(i), pm_graph.vertex(0 if (i+1)==self.hypervisors else (i+1))
+        #pm_graph = Graph(directed=False)
+        #pm_node_list = pm_graph.add_vertex(self.hypervisors)
+        #for i in range(0, self.hypervisors):
+        #    pm_graph.add_edge(pm_graph.vertex(i), pm_graph.vertex(0 if (i+1)==self.hypervisors else (i+1))
 
+        pm_graph = complete_graph(self.hypervisors)
+        
         return pm_graph
     	
     def __build_vcg(self):
@@ -116,7 +118,7 @@ class InsightScheduler(object):
 
         pmg = __build_pmg()
         vcg = __build_vcg()
-        
+
     	
 if __name__ == '__main__':
     """main function, program begins right here."""
