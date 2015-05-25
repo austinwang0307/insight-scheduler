@@ -61,7 +61,7 @@ class InsightScheduler(object):
         #    pm_graph.add_edge(pm_graph.vertex(i), pm_graph.vertex(0 if (i+1)==self.hypervisors else (i+1))
 
         pm_graph = complete_graph(self.hypervisors)
-        
+
         return pm_graph
     	
     def __build_vcg(self):
@@ -116,9 +116,18 @@ class InsightScheduler(object):
         # 3. nova boot cluster
         # 4. handle exceptions
 
+        #1
         pmg = __build_pmg()
         vcg = __build_vcg()
 
+        #2
+        mappings = subgraph_isomorphism(vcg, pmg)
+
+        #3
+
+        for m in range(0, len(mappings)):
+            for n in vcg.vertices():
+                
     	
 if __name__ == '__main__':
     """main function, program begins right here."""
