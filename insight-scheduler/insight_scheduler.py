@@ -116,18 +116,21 @@ class InsightScheduler(object):
         # 3. nova boot cluster
         # 4. handle exceptions
 
-        #1
+        #1 (tested)
         pmg = __build_pmg()
         vcg = __build_vcg()
 
-        #2
+        #2 (tested)
         mappings = subgraph_isomorphism(vcg, pmg)
 
         #3
 
         for m in range(0, len(mappings)):
             for n in vcg.vertices():
-                
+                host = mappings[m][vcg.vertex(int(n))]
+                vm_list = []
+                for vm in vcg.vertex_properties["nodes"][vcg.vertex_id(int(n))]:
+                	vm_list.append(vm)
     	
 if __name__ == '__main__':
     """main function, program begins right here."""
