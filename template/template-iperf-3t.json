@@ -1,5 +1,5 @@
 {
-  "name": "iperf 3-tier application",
+  "name": "iperf-3-tier-app",
   "description": "3-tier iperf cluster, with 2 heavy communication nodes",
   "members": 3,
   "topology": [
