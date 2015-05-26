@@ -35,8 +35,14 @@ class InsightScheduler(object):
 
         creds = __nova_creds()
         nova = client.Client(**creds)
-        self.hypervisors = len(nova.hypervisors.list())
+        self.hypervisors_num = len(nova.hypervisors.list())
         self.cluster_info = cluster_info
+        #====================================================================
+        self.hypervisors = [PDCStack06, PDCStack07, PDCStack13, PDCStack14]
+        self.net_id = "net-id=e5aaee27-1a2e-4372-b09f-35fec66e89a7"
+        self.key_name = "demo-key"
+        self.security_group = "default"
+        #====================================================================
 
     def __nova_creds(self):
         """Handles nova credentials"""
@@ -60,12 +66,12 @@ class InsightScheduler(object):
         #for i in range(0, self.hypervisors):
         #    pm_graph.add_edge(pm_graph.vertex(i), pm_graph.vertex(0 if (i+1)==self.hypervisors else (i+1))
 
-        pm_graph = complete_graph(self.hypervisors)
+        pm_graph = complete_graph(self.hypervisors_num)
 
         return pm_graph
-    	
+
     def __build_vcg(self):
-    	"""Build virtual cluster graph of the given vertices and edeges."""
+        """Build virtual cluster graph of the given vertices and edeges."""
 
         # vertices: list of vertices' ids, eg. [1, 2, 3]
         # edges: list of tuples of vertices, eg. [(1,2), (1,3)]
@@ -106,7 +112,7 @@ class InsightScheduler(object):
         for item in removed_nodes:
             vc_graph.remove_vertex(vc_graph.vertex(int(item)))
 
-        return vc_graph # associate property map to graph ???
+        return vc_graph
 
     def schedule_cluster(self):
         """Mapping of VC members and PMs"""
@@ -123,19 +129,28 @@ class InsightScheduler(object):
         #2 (tested)
         mappings = subgraph_isomorphism(vcg, pmg)
 
-        #3
+        #3.1 (tested)
         for m in range(0, len(mappings)):
-        	#print "mapping: " + str(m)
+            #print "mapping: " + str(m)
             for n in vcg.vertices():
                 host = mappings[m][vcg.vertex(int(n))]
                 #print "===begin==="
                 #print host
                 vm_list = []
-                for vm in vcg.vertex_properties["nodes"][vcg.vertex(int(n))]:
-                	vm_list.append(vm)
+                for vms in vcg.vertex_properties["nodes"][vcg.vertex(int(n))]:
+                	vm_list.append(vms)
                 #print vm_list
                 #print "===end==="
-    	
+
+                #3.2
+                for vm in vm_list:
+                    image = self.cluster_info["topology"][vm]["image"]
+                    flavor = self.cluster_info["topology"][vm]["flavor"]
+                    name = self.cluster_info["name"] + "-" + str(vm)
+                    zone_host = "nova:" + self.hypervisors[host]
+                    sub_P = subprocess.Popen(["nova", "boot", "--flavor", flavor, "--image", image, "--nic", self.net_id, "--security-group", self.security_group, "--key-name", self.key_name, "--availability-zone", zone_host, name])
+                    
+
 if __name__ == '__main__':
     """main function, program begins right here."""
 
@@ -163,6 +178,3 @@ if __name__ == '__main__':
         cluster_info = json.load(data_file)
 
     #pprint(cluster_info)
-
-    
-    
