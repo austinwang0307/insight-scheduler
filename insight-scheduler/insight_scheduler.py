@@ -25,7 +25,7 @@ from novaclient.v1_1 import client
 #from pprint import pprint
 
 class InsightScheduler(object):
-    """Scheduler which awares of VC members."""
+    """Scheduler which awares of VC members and their topology."""
 
     def __init__(self, cluster_info):
         """Initial the scheduler"""
@@ -124,13 +124,17 @@ class InsightScheduler(object):
         mappings = subgraph_isomorphism(vcg, pmg)
 
         #3
-
         for m in range(0, len(mappings)):
+        	#print "mapping: " + str(m)
             for n in vcg.vertices():
                 host = mappings[m][vcg.vertex(int(n))]
+                #print "===begin==="
+                #print host
                 vm_list = []
-                for vm in vcg.vertex_properties["nodes"][vcg.vertex_id(int(n))]:
+                for vm in vcg.vertex_properties["nodes"][vcg.vertex(int(n))]:
                 	vm_list.append(vm)
+                #print vm_list
+                #print "===end==="
     	
 if __name__ == '__main__':
     """main function, program begins right here."""
