@@ -149,7 +149,12 @@ class InsightScheduler(object):
                     name = self.cluster_info["name"] + "-" + str(vm)
                     zone_host = "nova:" + self.hypervisors[host]
                     sub_P = subprocess.Popen(["nova", "boot", "--flavor", flavor, "--image", image, "--nic", self.net_id, "--security-group", self.security_group, "--key-name", self.key_name, "--availability-zone", zone_host, name])
-                    
+                    stdout, stderr = sub_P.communicate()
+                    exitCode = sub_P.returncode
+                    if exitCode != 1:
+                        sys.exit(stderr)
+                    else:
+                        print stdout
 
 if __name__ == '__main__':
     """main function, program begins right here."""
@@ -161,6 +166,7 @@ if __name__ == '__main__':
     except getopt.GetoptError as e:
         print "insight_scheduler.py -cluster <cluster.json>"
         sys.exit(2)
+        #Unix programs generally use 2 for command line syntax errors and 1 for all other kind of errors. 
 
     if(len(opts) <= 0):
         print "insight_scheduler.py -cluster <cluster.json>"
@@ -178,3 +184,6 @@ if __name__ == '__main__':
         cluster_info = json.load(data_file)
 
     #pprint(cluster_info)
+
+    scheduler = InsightScheduler(cluster_info)
+    scheduler.schedule_cluster()
