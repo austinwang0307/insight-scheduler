@@ -38,7 +38,7 @@ class InsightScheduler(object):
         self.hypervisors_num = len(nova.hypervisors.list())
         self.cluster_info = cluster_info
         #====================================================================
-        self.hypervisors = [PDCStack06, PDCStack07, PDCStack13, PDCStack14]
+        self.hypervisors = ["PDCStack06", "PDCStack07", "PDCStack13", "PDCStack14"]
         self.net_id = "net-id=e5aaee27-1a2e-4372-b09f-35fec66e89a7"
         self.key_name = "demo-key"
         self.security_group = "default"
@@ -123,14 +123,15 @@ class InsightScheduler(object):
         # 4. handle exceptions
 
         #1 (tested)
-        pmg = __build_pmg()
-        vcg = __build_vcg()
+        pmg = self.__build_pmg()
+        vcg = self.__build_vcg()
 
         #2 (tested)
         mappings = subgraph_isomorphism(vcg, pmg)
 
         #3.1 (tested)
         for m in range(0, len(mappings)):
+            finished = 1
             #print "mapping: " + str(m)
             for n in vcg.vertices():
                 host = mappings[m][vcg.vertex(int(n))]
@@ -148,13 +149,17 @@ class InsightScheduler(object):
                     flavor = self.cluster_info["topology"][vm]["flavor"]
                     name = self.cluster_info["name"] + "-" + str(vm)
                     zone_host = "nova:" + self.hypervisors[host]
-                    sub_P = subprocess.Popen(["nova", "boot", "--flavor", flavor, "--image", image, "--nic", self.net_id, "--security-group", self.security_group, "--key-name", self.key_name, "--availability-zone", zone_host, name])
+                    #print "zone host:" + zone_host
+                    sub_P = subprocess.Popen(["nova", "boot", "--flavor", flavor, "--image", image, "--nic", self.net_id, "--security-group", self.security_group, "--key-name", self.key_name, "--availability-zone", zone_host, name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                     stdout, stderr = sub_P.communicate()
                     exitCode = sub_P.returncode
-                    if exitCode != 1:
+                    if exitCode != 0:
+                        print stderr
                         sys.exit(stderr)
                     else:
                         print stdout
+            if finished == 0:
+                break
 
 if __name__ == '__main__':
     """main function, program begins right here."""
