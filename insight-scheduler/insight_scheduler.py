@@ -143,7 +143,7 @@ class InsightScheduler(object):
                 #print vm_list
                 #print "===end==="
 
-                #3.2
+                #3.2 (tested)
                 for vm in vm_list:
                     image = self.cluster_info["topology"][vm]["image"]
                     flavor = self.cluster_info["topology"][vm]["flavor"]
