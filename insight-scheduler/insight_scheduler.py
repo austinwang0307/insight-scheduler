@@ -157,6 +157,7 @@ class InsightScheduler(object):
                         print stderr
                         sys.exit(stderr)
                     else:
+                        finished = exitCode
                         print stdout
             if finished == 0:
                 break
