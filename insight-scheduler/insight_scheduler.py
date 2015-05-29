@@ -33,7 +33,7 @@ class InsightScheduler(object):
         # 1. Nova authentication.
         # 2. query numbers of compute nodes.
 
-        creds = __nova_creds()
+        creds = self.__nova_creds()
         nova = client.Client(**creds)
         self.hypervisors_num = len(nova.hypervisors.list())
         self.cluster_info = cluster_info
@@ -164,16 +164,16 @@ if __name__ == '__main__':
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hc:", ["help", "cluster="])
     except getopt.GetoptError as e:
-        print "insight_scheduler.py -cluster <cluster.json>"
+        print "insight_scheduler.py --cluster <cluster.json>"
         sys.exit(2)
         #Unix programs generally use 2 for command line syntax errors and 1 for all other kind of errors. 
 
     if(len(opts) <= 0):
-        print "insight_scheduler.py -cluster <cluster.json>"
+        print "insight_scheduler.py --cluster <cluster.json>"
         sys.exit(2)
     for opt, arg in opts:
         if opt in ("-h", "--help"):
-            print "insight_scheduler.py -cluster <cluster.json>"
+            print "insight_scheduler.py --cluster <cluster.json>"
             sys.exit()
         elif opt in ("-c", "--cluster"):
             cluster = arg
